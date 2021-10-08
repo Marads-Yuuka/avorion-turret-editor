@@ -1,12 +1,12 @@
 
 meta = {
 	type = "mod",
-	id = "2017677089",
-	name = "DccWeaponEngineering",
-	title = "Weapon Engineering",
+	id = "",
+	name = "DccWeaponEngineeringRev",
+	title = "Weapon Engineering (Revision)",
 	description = "Grind turrets into other more useful turrets.",
-	authors = { "darkconsole" },
-	version = "1.6.3",
+	authors = { "darkconsole, Marads~Yuuka" },
+	version = "1.7.0",
 	dependencies = {
 		{ id = "Avorion", min = "0.32", max = "9001.0" }
 	},
