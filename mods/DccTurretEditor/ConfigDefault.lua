@@ -30,7 +30,7 @@ local Config = {
 	CostTargeting = 10000,
 	-- how many credits to charge to enable auto targeting.
 	
-	CostSeeker = 10000,
+	CostSeeker = 100000,
 	-- how many credits to charge to enable auto targeting.
 
 	CostCoaxial = 25000,
