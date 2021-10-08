@@ -1272,16 +1272,21 @@ function This:SetWeaponSeeker(Item,Val)
 
 	if(not cantBeSeeker.weapType) then
 		Item.seeker = val
+		return true
 	end
 
-	return
+	return false
 end
 
 function This:ToggleWeaponSeeker(Item)
 -- set automatic targeting.
 
-	This:SetWeaponSeeker(Item,(not Item.automatic))
-	return
+	if(This:SetWeaponSeeker(Item,(not Item.automatic))) then
+		return true
+	end
+	
+	return false
+	
 end
 
 --------------------------------------------------------------------------------
