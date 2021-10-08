@@ -189,25 +189,6 @@ function This:IsFinite(Value)
 
 	return true
 end
-
-function This:GetMaterialTypeByMaterial(Input)
--- this may seem stupid but there appears to be no way to get the MaterialType
--- out of a fucking Material object lmao.
-
-	local MatType = 1
-	local Mat = nil
-
-	for MatType=0, MaterialType.Avorion do
-		Mat = Material(MatType)
-
-		if(Mat == Input) then
-			return MatType
-		end
-	end
-
-	return nil
-end
-
 --------------------------------------------------------------------------------
 -- these ones need to deal with each individual weapon on the turret -----------
 
@@ -448,97 +429,6 @@ function This:SetWeaponFireRate(Item,Value)
 		end
 
 		Weap.fireRate = Value
-		Item:addWeapon(Weap)
-	end
-
-	return
-end
-
---------
-
-function This:GetWeaponProjectileSize(Item,Value)
--- get the projectile size
-
-	local WeapList = {Item:getWeapons()}
-
-	for WeapIter,Weap in pairs(WeapList) do
-		return round(Weap.psize,3)
-	end
-
-	return
-end
-
-function This:SetWeaponProjectileSize(Item,Value)
--- get the projectile size
-
-	local WeapList = {Item:getWeapons()}
-	Item:clearWeapons()
-
-	for WeapIter,Weap in pairs(WeapList) do
-		if(Value < 0) then
-			Value = 0
-		end
-
-		Weap.psize = Value
-		Item:addWeapon(Weap)
-	end
-
-	return
-end
-
---------
-
-function This:GetWeaponProjectileSpeed(Item)
--- get how fast this turret projectile flies
-
-	local WeapList = {Item:getWeapons()}
-
-	for WeapIter,Weap in pairs(WeapList) do
-		if(Weap.pvelocity == nil) then
-			return nil
-		end
-
-		return round(Weap.pvelocity,3)
-	end
-
-	return
-end
-
-function This:ModWeaponProjectileSpeed(Item,Per,Dont)
--- modify the fire rate by a percent
-
-	local WeapList = {Item:getWeapons()}
-	local Value = 0
-	Item:clearWeapons()
-
-	for WeapIter,Weap in pairs(WeapList) do
-		Value = ((Weap.pvelocity * (Per / 100)) + Weap.pvelocity)
-
-		if(Value < 0) then
-			Value = 0
-		end
-
-		if(Dont == true) then return Value end
-
-		Weap.pvelocity = Value
-		Item:addWeapon(Weap)
-	end
-
-	return
-end
-
-function This:SetWeaponProjectileSpeed(Item,Value)
--- modify the fire rate by a percent
-
-	local WeapList = {Item:getWeapons()}
-	Item:clearWeapons()
-
-	for WeapIter,Weap in pairs(WeapList) do
-		if(Value < 0) then
-			Value = 0
-		end
-
-		Weap.pvelocity = Value
 		Item:addWeapon(Weap)
 	end
 
@@ -1073,8 +963,7 @@ function This:SetWeaponHeatRate(Item,Value)
 
 	if(not This:IsFinite(Item.shootingTime)) then
 		Item.heatPerShot = 0.0
-		Item.coolingRate = 1.0
-		Item.maxHeat = 0.0
+		Item.coolingRate = 0.0
 		Item.coolingType = CoolingType.Standard
 		Item:addDescription("[WeapEng] Fighter Factory Fix Applied (Heat Sinks)","")
 	end
@@ -1308,7 +1197,6 @@ function This:SetWeaponSize(Item,Val)
 -- set this turret's size
 
 	Item.size = Val
-	This:SetWeaponProjectileSize(Item,Val)
 	return
 end
 
@@ -1365,16 +1253,35 @@ end
 
 --------
 
-function This:GetWeaponMaterial(Item)
--- get the weapon material
+function This:GetWeaponSeeker(Item)
+-- get if turret has auto-seeker.
 
-	return Item.material
+	return Item.seeker
 end
 
-function This:GetWeaponMaterialType(Item)
--- get the weapon material type
+function This:SetWeaponSeeker(Item,Val)
+-- set auto-seeker.
 
-	return This:GetMaterialTypeByMaterial(Item.material)
+	-- if the turret has auto-seeker, and we want to turn it off
+	-- weaponappearance decide if weapons can't have auto-seeker
+	-- Laser, MiningLaser, RailGun, Repair, Tesla, PulseCannon
+	-- get using This:GetWeaponRealType(Item)
+	
+	local cantBeSeeker = { Laser=true, MiningLaser=true, RailGun=true, Repair=true, Tesla=true, PulseCannon=true }
+	local weapType = This:GetWeaponRealType(Item)
+
+	if(not cantBeSeeker.weapType) then
+		Item.seeker = val
+	end
+
+	return
+end
+
+function This:ToggleWeaponSeeker(Item)
+-- set automatic targeting.
+
+	This:SetWeaponSeeker(Item,(not Item.automatic))
+	return
 end
 
 --------------------------------------------------------------------------------
