@@ -458,6 +458,7 @@ function Win:BuildUI()
 	self.NumSize.showValue = true
 	self.NumSize.min = 0.5
 	self.NumSize.max = 10.0
+	self.NumSize.step = 0.5
 	self.NumSize.center = vec2(self.NumSize.center.x,(self.NumSize.center.y - 6))
 
 	--------
