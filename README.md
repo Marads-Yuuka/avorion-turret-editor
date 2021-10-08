@@ -4,6 +4,16 @@
 ![Minimum Avorion Version](https://img.shields.io/badge/Avorion-2.0.0-lightgrey.svg)
 ![Tested Avorion Version](https://img.shields.io/badge/Last%20Tested-2.0.8-lightgrey.svg)
 
+=========================================
+
+I created this fork to change the Targeting option into toggling Seeker Shots.
+
+Below is the original description from the mod creator.
+
+Marads
+
+=========================================
+
 > *By the time we reach Jupiter Station, I don't want their engineers to have a
 > thing to do but give us a wash and a wax.*
 
