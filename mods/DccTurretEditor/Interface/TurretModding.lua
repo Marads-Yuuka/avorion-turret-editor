@@ -274,6 +274,9 @@ function Win:BuildUI()
 
 	--------
 
+
+	--------
+
 	self.BtnDamage = self.Window:createButton(
 		Rect(),
 		"Ammunition / Power",
@@ -407,41 +410,22 @@ function Win:BuildUI()
 
 	--------
 
-	self.BtnProjectileSpeed = self.Window:createButton(
+	self.BtnSeeker = self.Window:createButton(
 		Rect(),
-		"Accelerators",
-		"TurretModdingUI_OnClickedBtnProjectileSpeed"
+		"Auto-Seeker",
+		"TurretModdingUI_OnClickedBtnSeeker"
 	)
-	self.BtnProjectileSpeed.textSize = FontSize3
-	self.BtnProjectileSpeed.rect = FramedRect(self.UpgradeFrame,5,3,Cols,Rows)
-	self.BtnProjectileSpeed.tooltip = "Increase the projectile velocity."
+	self.BtnSeeker.textSize = FontSize3
+	self.BtnSeeker.rect = FramedRect(self.UpgradeFrame,1,6,Cols,Rows)
+	self.BtnSeeker.tooltip = "Toggle Auto-Seeker.\n(Does not consume turrets)"
 
-	self.LblProjectileSpeed = self.Window:createLabel(
+	self.LblSeeker = self.Window:createLabel(
 		Rect(),
-		"$PSPEED",
+		"$SEEKER",
 		FontSize3
 	)
-	self.LblProjectileSpeed.rect = FramedRect(self.UpgradeFrame,5,4,Cols,Rows)
-	self.LblProjectileSpeed.centered = true
-
-	--------
-
-	self.BtnTargeting = self.Window:createButton(
-		Rect(),
-		"Targeting",
-		"TurretModdingUI_OnClickedBtnTargeting"
-	)
-	self.BtnTargeting.textSize = FontSize3
-	self.BtnTargeting.rect = FramedRect(self.UpgradeFrame,1,6,Cols,Rows)
-	self.BtnTargeting.tooltip = "Toggle Automatic Targeting.\n(Does not consume turrets)"
-
-	self.LblTargeting = self.Window:createLabel(
-		Rect(),
-		"$TARGETING",
-		FontSize3
-	)
-	self.LblTargeting.rect = FramedRect(self.UpgradeFrame,1,7,Cols,Rows)
-	self.LblTargeting.centered = true
+	self.LblSeeker.rect = FramedRect(self.UpgradeFrame,1,7,Cols,Rows)
+	self.LblSeeker.centered = true
 
 	--------
 
@@ -473,7 +457,7 @@ function Win:BuildUI()
 	self.NumSize.rect = FramedRect(self.UpgradeFrame,3,7,Cols,Rows,5)
 	self.NumSize.showValue = true
 	self.NumSize.min = 0.5
-	self.NumSize.max = 3.0
+	self.NumSize.max = 10.0
 	self.NumSize.center = vec2(self.NumSize.center.x,(self.NumSize.center.y - 6))
 
 	--------
@@ -1058,13 +1042,13 @@ function Win:UpdateFields()
 	local Accuracy = 0
 	local Efficiency = 0
 	local Targeting = 0
+	local Seeker = 0
 	local GunCount = 0
 	local Colour = Color()
 	local Coaxial = false
 	local Size = 0
 	local Slots = 0
 	local SlotUpgrade = 0
-	local PSpeed = nil
 	local MountingEnable = false
 	local FlakEnable = false
 	local CoolingEnable = false
@@ -1081,7 +1065,6 @@ function Win:UpdateFields()
 	local InfoSpeed = ""
 	local InfoMaxHeat = ""
 	local InfoSlots = ""
-	local InfoPSpeed = ""
 
 	if(Item ~= nil) then
 		WeaponType = TurretLib:GetWeaponType(Item.item)
@@ -1097,12 +1080,12 @@ function Win:UpdateFields()
 		Accuracy = TurretLib:GetWeaponAccuracy(Item.item)
 		Efficiency = TurretLib:GetWeaponEfficiency(Item.item)
 		Targeting = TurretLib:GetWeaponTargeting(Item.item)
+		Seeker = TurretLib:GetWeaponSeeker(Item.item)
 		GunCount = TurretLib:GetWeaponCount(Item.item)
 		Colour = TurretLib:GetWeaponColour(Item.item)
 		Coaxial = TurretLib:GetWeaponCoaxial(Item.item)
 		Size = TurretLib:GetWeaponSize(Item.item)
 		Slots = TurretLib:GetWeaponSlots(Item.item)
-		PSpeed = TurretLib:GetWeaponProjectileSpeed(Item.item)
 		SlotUpgrade = self:GetBinMountingUpgrade(Item.item)
 
 		MountingEnable = self:ShouldAllowMountingUpgrade(Real)
@@ -1125,10 +1108,6 @@ function Win:UpdateFields()
 			InfoSpeed = " (+" .. round((TurretLib:ModWeaponSpeed(Item.item,BuffValue,true) - Speed),3) .. ")"
 			InfoMaxHeat = " (+" .. round((TurretLib:ModWeaponMaxHeat(Item.item,BuffValue,true) - MaxHeat),3) .. ")"
 			InfoSlots = " (-" .. SlotUpgrade ..  ")"
-
-			if(PSpeed ~= nil) then
-				InfoPSpeed = " (+" .. round((TurretLib:ModWeaponProjectileSpeed(Item.item,BuffValue,true) - PSpeed),3) .. ")"
-			end
 		end
 	end
 
@@ -1139,6 +1118,8 @@ function Win:UpdateFields()
 
 	self.BtnTargeting.caption = "Targeting (Cr. " .. toReadableValue(Config.CostTargeting) .. ")"
 	self.BtnTargeting.tooltip = "Toggle Automatic Targeting.\n(Does not consume turrets)"
+	self.BtnSeeker.caption = "Auto-Seeker (Cr. " .. toReadableValue(Config.CostSeeker) .. ")"
+	self.BtnSeeker.tooltip = "Toggle AutoSeeker.\n(Does not consume turrets)"
 	self.BtnCoaxial.caption = "Coaxial (Cr. " .. toReadableValue(Config.CostCoaxial) .. ")"
 	self.BtnColour.caption = "Colour HSV (Cr. " .. toReadableValue(Config.CostColour) .. ")"
 	self.BtnSize.caption = "Scale (Cr. " .. toReadableValue(Config.CostSize) .. ")"
@@ -1180,18 +1161,12 @@ function Win:UpdateFields()
 	self.LblAccuracy.color = ColourLight
 
 	self.BtnEfficiency.caption = "Phase Filters"
-	self.BtnEfficiency.active = (Efficiency > 0 and Efficiency < 1)
 	self.LblEfficiency.caption = (Efficiency * 100) .. "%" .. InfoEfficiency
 	self.LblEfficiency.color = ColourLight
 
 	self.BtnMounting.caption = "Reinforced Mount"
 	self.BtnMounting.active = MountingEnable
 	self.LblMounting.caption = Slots .. InfoSlots
-	self.LblMounting.color = ColourLight
-
-	self.BtnProjectileSpeed.active = (PSpeed ~= nil) and (PSpeed < Config.ProjectileSpeedMax)
-	self.LblProjectileSpeed.caption = (PSpeed or "") .. InfoPSpeed
-	self.LblProjectileSpeed.color = ColourLight
 
 	if(FixTargetingNerfEnable) then
 		self.BtnTargeting.caption = "Fix Auto Nerf (Cr. " .. toReadableValue(Config.CostTargeting) .. ")"
@@ -1200,6 +1175,10 @@ function Win:UpdateFields()
 
 	if(Targeting) then self.LblTargeting.caption = "YES"
 	else self.LblTargeting.caption = "NO"
+	end
+	
+	if(Seeker) then self.LblSeeker.caption = "YES"
+	else self.LblSeeker.caption = "NO"
 	end
 
 	self.LblCoaxial.color = ColourLight
@@ -1222,6 +1201,28 @@ function Win:UpdateFields()
 	self.BtnMkFlak.active = FlakEnable
 	self.BtnMkCool.active = CoolingEnable
 
+	-- show everything.
+
+	self.BtnHeat:show()
+	self.BtnMaxHeat:show()
+	self.BtnDamage:show()
+	self.BtnSpeed:show()
+	self.BtnRange:show()
+	self.BtnFireRate:show()
+	self.BtnMaxHeat:show()
+	self.BtnCoaxial:show()
+	self.BtnSize:show()
+
+	self.LblHeat:show()
+	self.LblMaxHeat:show()
+	self.LblDamage:show()
+	self.LblSpeed:show()
+	self.LblRange:show()
+	self.LblFireRate:show()
+	self.LblMaxHeat:show()
+	self.LblCoaxial:show()
+
+	self.NumSize:show()
 
 	-- hide things that make no sense to edit for this turret.
 
@@ -1255,14 +1256,6 @@ function Win:UpdateFields()
 
 	if((Efficiency == 0) or (Efficiency == 1)) then
 		self.LblEfficiency.color = ColourDark
-	end
-
-	if(PSpeed == nil) then
-		self.LblProjectileSpeed.color = ColourDark
-	end
-
-	if(not MountingEnable) then
-		self.LblMounting.color = ColourDark
 	end
 
 	return
@@ -1754,6 +1747,32 @@ function Win:OnClickedBtnTargeting()
 	return
 end
 
+function Win:OnClickedBtnSeeker()
+-- toggle auto-seeker
+
+	local Mock, Real = Win:GetCurrentItems()
+	local PlayerRef = Player()
+
+	if(Mock == nil) then
+		PrintError("No turret selected")
+		return
+	end
+
+	if(PlayerRef.money < Config.CostTargeting) then
+		PrintError("You do not have enough credits")
+		return
+	end
+
+	if(TurretLib:ToggleWeaponSeeker(Real)) then
+		TurretLib:PlayerPayCredits(PlayerRef.index, Config.CostSeeker)
+	else		
+		PrintError("Turret can't have auto-seeker")
+	end
+
+	self:UpdateItems(Mock,Real,true)
+	return
+end
+
 function Win:OnClickedBtnColour()
 -- set colour
 
@@ -1785,7 +1804,7 @@ function Win:OnClickedBtnColour()
 end
 
 function Win:OnClickedBtnCoaxial()
--- toggle targeting
+-- toggle coaxial
 
 	local Mock, Real = Win:GetCurrentItems()
 	local PlayerRef = Player()
@@ -1942,33 +1961,6 @@ function Win:OnClickedBtnMkCool()
 	return
 end
 
-function Win:OnClickedBtnProjectileSpeed()
--- raise weapon damage
-
-	local BuffValue = Win:CalculateBinItems()
-	local Mock, Real = Win:GetCurrentItems()
-
-	if(Mock == nil) then
-		PrintError("No turret selected")
-		return
-	end
-
-	if(BuffValue == 0.0) then
-		PrintError("No turrets in scrap bin")
-		return
-	end
-
-	if(TurretLib:GetWeaponProjectileSpeed(Real) == nil) then
-		PrintWarning("This turret instantly slaps your mom.")
-		return
-	end
-
-	TurretLib:ModWeaponProjectileSpeed(Real,BuffValue)
-
-	self:UpdateItems(Mock,Real)
-	return
-end
-
 --------------------------------------------------------------------------------
 
 function TurretModdingUI_Update(NewCurrentIndex)
@@ -2003,13 +1995,13 @@ function TurretModdingUI_OnClickedBtnAccuracy(...) Win:OnClickedBtnAccuracy(...)
 function TurretModdingUI_OnClickedBtnEfficiency(...) Win:OnClickedBtnEfficiency(...) end
 function TurretModdingUI_OnClickedBtnMounting(...) Win:OnClickedBtnMounting(...) end
 function TurretModdingUI_OnClickedBtnTargeting(...) Win:OnClickedBtnTargeting(...) end
+function TurretModdingUI_OnClickedBtnSeeker(...) Win:OnClickedBtnSeeker(...) end
 function TurretModdingUI_OnClickedBtnColour(...) Win:OnClickedBtnColour(...) end
 function TurretModdingUI_OnClickedBtnCoaxial(...) Win:OnClickedBtnCoaxial(...) end
 function TurretModdingUI_OnClickedBtnSize(...) Win:OnClickedBtnSize(...) end
 function TurretModdingUI_OnClickedBtnMounting(...) Win:OnClickedBtnMounting(...) end
 function TurretModdingUI_OnClickedBtnMkFlak(...) Win:OnClickedBtnMkFlak(...) end
 function TurretModdingUI_OnClickedBtnMkCool(...) Win:OnClickedBtnMkCool(...) end
-function TurretModdingUI_OnClickedBtnProjectileSpeed(...) Win:OnClickedBtnProjectileSpeed(...) end
 
 --------------------------------------------------------------------------------
 
