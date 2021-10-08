@@ -412,12 +412,12 @@ function Win:BuildUI()
 
 	self.BtnSeeker = self.Window:createButton(
 		Rect(),
-		"Auto-Seeker",
+		"Auto Seeker",
 		"TurretModdingUI_OnClickedBtnSeeker"
 	)
 	self.BtnSeeker.textSize = FontSize3
 	self.BtnSeeker.rect = FramedRect(self.UpgradeFrame,1,6,Cols,Rows)
-	self.BtnSeeker.tooltip = "Toggle Auto-Seeker.\n(Does not consume turrets)"
+	self.BtnSeeker.tooltip = "Toggle Auto Seeker.\n(Does not consume turrets)"
 
 	self.LblSeeker = self.Window:createLabel(
 		Rect(),
@@ -1118,7 +1118,7 @@ function Win:UpdateFields()
 
 	self.BtnTargeting.caption = "Targeting (Cr. " .. toReadableValue(Config.CostTargeting) .. ")"
 	self.BtnTargeting.tooltip = "Toggle Automatic Targeting.\n(Does not consume turrets)"
-	self.BtnSeeker.caption = "Auto-Seeker (Cr. " .. toReadableValue(Config.CostSeeker) .. ")"
+	self.BtnSeeker.caption = "Auto Seeker (Cr. " .. toReadableValue(Config.CostSeeker) .. ")"
 	self.BtnSeeker.tooltip = "Toggle AutoSeeker.\n(Does not consume turrets)"
 	self.BtnCoaxial.caption = "Coaxial (Cr. " .. toReadableValue(Config.CostCoaxial) .. ")"
 	self.BtnColour.caption = "Colour HSV (Cr. " .. toReadableValue(Config.CostColour) .. ")"
@@ -1766,7 +1766,7 @@ function Win:OnClickedBtnSeeker()
 	if(TurretLib:ToggleWeaponSeeker(Real)) then
 		TurretLib:PlayerPayCredits(PlayerRef.index, Config.CostSeeker)
 	else		
-		PrintError("Turret can't have auto-seeker")
+		PrintError("Turret can't have auto seeker")
 	end
 
 	self:UpdateItems(Mock,Real,true)
