@@ -1727,7 +1727,7 @@ function Win:OnClickedBtnSeeker()
 
 	if(TurretLib:ToggleWeaponSeeker(Real)) then
 		TurretLib:PlayerPayCredits(PlayerRef.index, Config.CostSeeker)
-	else		
+	else
 		PrintError("Turret can't have auto-seeker")
 	end
 
