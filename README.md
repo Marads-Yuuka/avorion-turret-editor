@@ -8,6 +8,8 @@
 
 I created this fork to change the Targeting option into toggling Seeker Shots.
 
+![Example Image](https://i.imgur.com/jtksALS.png)
+
 Below is the original description from the mod creator.
 
 -Marads
