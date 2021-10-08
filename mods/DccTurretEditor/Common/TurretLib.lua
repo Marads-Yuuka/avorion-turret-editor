@@ -1276,13 +1276,22 @@ function This:SetWeaponSeeker(Item,Val)
 	-- Bolter 7 - 8 - true
 	-- Tesla - 9 - false
 	-- PulseCannon - 10 - false
-	-- AntiFighter - 11 - true	
-	local CanBeSeeker = { 1, 0, 0, 1, 1, 1, 0, 0, 1, 0, 0, 1 }
+	-- AntiFighter - 11 - true
+	
 	-- For some reason lua starts index at 1 so we add one to the index
-	local WeapTypeIndex = This:GetWeaponRealType(Item)
-	WeapTypeIndex = WeapTypeIndex + 1
-	if(CanBeSeeker[WeapTypeIndex] == 1) then
-		Item.seeker = Val
+	local canBeSeeker = { 1, 0, 0, 1, 1, 1, 0, 0, 1, 0, 0, 1 }
+	local weapTypeIndex = This:GetWeaponRealType(Item)
+	weapTypeIndex = weapTypeIndex + 1
+
+	if(canBeSeeker[weapTypeIndex] == 1) then
+		-- In order to activate the auto-seeker we need to go deeper into the item
+		local WeapList = {Item:getWeapons()}
+		Item:clearWeapons()
+
+		for WeapIter,Weap in pairs(WeapList) do
+			Weap.seeker = Val
+			Item:addWeapon(Weap)
+		end		
 		return true
 	end
 
