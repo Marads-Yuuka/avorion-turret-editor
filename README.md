@@ -54,7 +54,7 @@ some red beams and bullets.
 * Trigger Mechanism - Increase the rate of fire.
 * Stabilizers - Increase the accuracy rating.
 * Phase Filters - Increase the efficiency rating of mining or scav gun.
-* Auto-Seeker - Add or remove auto-seeker projectiles for the turret.
+* Targeting - Add or remove self targeting for the turret.
 * Colour HSV - Drag the sliders to change the colour of the beam or projectiles.
 * Reinforced Mounting - Reduce the slot cost of a turret. Requires scrapping 5 of the same quality or better.
 * Convert Anti-Fighter Turret to Flak Cannon. Requires scrapping 3 other AF turrets
