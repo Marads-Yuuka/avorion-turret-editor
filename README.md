@@ -10,7 +10,7 @@ I created this fork to change the Targeting option into toggling Seeker Shots.
 
 Below is the original description from the mod creator.
 
-Marads
+-Marads
 
 =========================================
 
