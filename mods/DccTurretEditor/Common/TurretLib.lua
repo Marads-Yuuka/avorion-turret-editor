@@ -1276,14 +1276,13 @@ function This:SetWeaponSeeker(Item,Val)
 	-- Bolter 7 - 8 - true
 	-- Tesla - 9 - false
 	-- PulseCannon - 10 - false
-	-- AntiFighter - 11 - true
+	-- AntiFighter - 11 - true	
+	local CanBeSeeker = { 1, 0, 0, 1, 1, 1, 0, 0, 1, 0, 0, 1 }
 	-- For some reason lua starts index at 1 so we add one to the index
-	
-	local canBeSeeker = { 1, 0, 0, 1, 1, 1, 0, 0, 1, 0, 0, 1 }
-	local weapTypeIndex = This:GetWeaponRealType(Item)
-	weapTypeIndex = weapTypeIndex + 1
-	if(canBeSeeker[weapTypeIndex] == 1) then
-		Item.seeker = val
+	local WeapTypeIndex = This:GetWeaponRealType(Item)
+	WeapTypeIndex = WeapTypeIndex + 1
+	if(CanBeSeeker[WeapTypeIndex] == 1) then
+		Item.seeker = Val
 		return true
 	end
 
