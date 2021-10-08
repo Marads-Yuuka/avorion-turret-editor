@@ -412,12 +412,12 @@ function Win:BuildUI()
 
 	self.BtnSeeker = self.Window:createButton(
 		Rect(),
-		"Auto Seeker",
+		"Auto-Seeker",
 		"TurretModdingUI_OnClickedBtnSeeker"
 	)
 	self.BtnSeeker.textSize = FontSize3
 	self.BtnSeeker.rect = FramedRect(self.UpgradeFrame,1,6,Cols,Rows)
-	self.BtnSeeker.tooltip = "Toggle Auto Seeker.\n(Does not consume turrets)"
+	self.BtnSeeker.tooltip = "Toggle Auto-Seeker.\n(Does not consume turrets)"
 
 	self.LblSeeker = self.Window:createLabel(
 		Rect(),
@@ -1041,7 +1041,6 @@ function Win:UpdateFields()
 	local Range = 0
 	local Accuracy = 0
 	local Efficiency = 0
-	local Targeting = 0
 	local Seeker = 0
 	local GunCount = 0
 	local Colour = Color()
@@ -1052,7 +1051,6 @@ function Win:UpdateFields()
 	local MountingEnable = false
 	local FlakEnable = false
 	local CoolingEnable = false
-	local FixTargetingNerfEnable = false
 	local CoolingTypeBattery = false
 
 	local InfoFireRate = ""
@@ -1079,7 +1077,6 @@ function Win:UpdateFields()
 		Range = TurretLib:GetWeaponRange(Item.item)
 		Accuracy = TurretLib:GetWeaponAccuracy(Item.item)
 		Efficiency = TurretLib:GetWeaponEfficiency(Item.item)
-		Targeting = TurretLib:GetWeaponTargeting(Item.item)
 		Seeker = TurretLib:GetWeaponSeeker(Item.item)
 		GunCount = TurretLib:GetWeaponCount(Item.item)
 		Colour = TurretLib:GetWeaponColour(Item.item)
@@ -1089,7 +1086,6 @@ function Win:UpdateFields()
 		SlotUpgrade = self:GetBinMountingUpgrade(Item.item)
 
 		MountingEnable = self:ShouldAllowMountingUpgrade(Real)
-		FixTargetingNerfEnable = TurretLib:IsDefaultTargetingNerfFixable(Real)
 		FlakEnable = Win:ShouldAllowFlakConversion(Real)
 		CoolingEnable = Win:ShouldAllowCoolingSystem(Real)
 		CoolingTypeBattery = TurretLib:GetWeaponCoolingType(Real) == CoolingType.BatteryCharge
@@ -1116,9 +1112,7 @@ function Win:UpdateFields()
 
 	-- fill in all the values.
 
-	self.BtnTargeting.caption = "Targeting (Cr. " .. toReadableValue(Config.CostTargeting) .. ")"
-	self.BtnTargeting.tooltip = "Toggle Automatic Targeting.\n(Does not consume turrets)"
-	self.BtnSeeker.caption = "Auto Seeker (Cr. " .. toReadableValue(Config.CostSeeker) .. ")"
+	self.BtnSeeker.caption = "Auto-Seeker (Cr. " .. toReadableValue(Config.CostSeeker) .. ")"
 	self.BtnSeeker.tooltip = "Toggle AutoSeeker.\n(Does not consume turrets)"
 	self.BtnCoaxial.caption = "Coaxial (Cr. " .. toReadableValue(Config.CostCoaxial) .. ")"
 	self.BtnColour.caption = "Colour HSV (Cr. " .. toReadableValue(Config.CostColour) .. ")"
@@ -1167,15 +1161,6 @@ function Win:UpdateFields()
 	self.BtnMounting.caption = "Reinforced Mount"
 	self.BtnMounting.active = MountingEnable
 	self.LblMounting.caption = Slots .. InfoSlots
-
-	if(FixTargetingNerfEnable) then
-		self.BtnTargeting.caption = "Fix Auto Nerf (Cr. " .. toReadableValue(Config.CostTargeting) .. ")"
-		self.BtnTargeting.tooltip = "Fixes automatic targeting nerf by removing targeting and fixing the damage values. You must then re-apply targeting afterwards."
-	end
-
-	if(Targeting) then self.LblTargeting.caption = "YES"
-	else self.LblTargeting.caption = "NO"
-	end
 	
 	if(Seeker) then self.LblSeeker.caption = "YES"
 	else self.LblSeeker.caption = "NO"
@@ -1724,29 +1709,6 @@ function Win:OnClickedBtnMounting()
 	return
 end
 
-function Win:OnClickedBtnTargeting()
--- toggle targeting
-
-	local Mock, Real = Win:GetCurrentItems()
-	local PlayerRef = Player()
-
-	if(Mock == nil) then
-		PrintError("No turret selected")
-		return
-	end
-
-	if(PlayerRef.money < Config.CostTargeting) then
-		PrintError("You do not have enough credits")
-		return
-	end
-
-	TurretLib:ToggleWeaponTargeting(Real)
-	TurretLib:PlayerPayCredits(PlayerRef.index, Config.CostTargeting)
-
-	self:UpdateItems(Mock,Real,true)
-	return
-end
-
 function Win:OnClickedBtnSeeker()
 -- toggle auto-seeker
 
@@ -1758,7 +1720,7 @@ function Win:OnClickedBtnSeeker()
 		return
 	end
 
-	if(PlayerRef.money < Config.CostTargeting) then
+	if(PlayerRef.money < Config.CostSeeker) then
 		PrintError("You do not have enough credits")
 		return
 	end
@@ -1766,7 +1728,7 @@ function Win:OnClickedBtnSeeker()
 	if(TurretLib:ToggleWeaponSeeker(Real)) then
 		TurretLib:PlayerPayCredits(PlayerRef.index, Config.CostSeeker)
 	else		
-		PrintError("Turret can't have auto seeker")
+		PrintError("Turret can't have auto-seeker")
 	end
 
 	self:UpdateItems(Mock,Real,true)
@@ -1904,10 +1866,6 @@ function Win:OnClickedBtnMkFlak()
 	TurretLib:SetWeaponExplosion(Real,Radius)
 	TurretLib:SetWeaponSpeed(Real,Speed)
 
-	if(not TurretLib:GetWeaponTargeting(Real)) then
-		TurretLib:SetWeaponTargeting(Real,true)
-	end
-
 	-- allowing them to not be coaxial will probably make it easier to
 	-- minimise the number of them needed.
 
@@ -1994,7 +1952,6 @@ function TurretModdingUI_OnClickedBtnDamage(...) Win:OnClickedBtnDamage(...) end
 function TurretModdingUI_OnClickedBtnAccuracy(...) Win:OnClickedBtnAccuracy(...) end
 function TurretModdingUI_OnClickedBtnEfficiency(...) Win:OnClickedBtnEfficiency(...) end
 function TurretModdingUI_OnClickedBtnMounting(...) Win:OnClickedBtnMounting(...) end
-function TurretModdingUI_OnClickedBtnTargeting(...) Win:OnClickedBtnTargeting(...) end
 function TurretModdingUI_OnClickedBtnSeeker(...) Win:OnClickedBtnSeeker(...) end
 function TurretModdingUI_OnClickedBtnColour(...) Win:OnClickedBtnColour(...) end
 function TurretModdingUI_OnClickedBtnCoaxial(...) Win:OnClickedBtnCoaxial(...) end
