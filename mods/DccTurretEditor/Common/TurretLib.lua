@@ -1264,13 +1264,25 @@ function This:SetWeaponSeeker(Item,Val)
 
 	-- if the turret has auto-seeker, and we want to turn it off
 	-- weaponappearance decide if weapons can't have auto-seeker
-	-- Laser, MiningLaser, RailGun, Repair, Tesla, PulseCannon
-	-- get using This:GetWeaponRealType(Item)
+	-- enum WeaponAppearance - ID - can be seeker
+	-- ChainGun - 0 - true
+	-- Laser - 1 - false
+	-- MiningLaser - 2 - false
+	-- PlasmaGun - 3 - true
+	-- RocketLauncher - 4 - true
+	-- Cannon - 5 - true
+	-- RailGun - 6 - false
+	-- Repair - 7 - false
+	-- Bolter 7 - 8 - true
+	-- Tesla - 9 - false
+	-- PulseCannon - 10 - false
+	-- AntiFighter - 11 - true
+	-- For some reason lua starts index at 1 so we add one to the index
 	
-	local cantBeSeeker = { Laser=true, MiningLaser=true, RailGun=true, Repair=true, Tesla=true, PulseCannon=true }
-	local weapType = This:GetWeaponRealType(Item)
-
-	if(not cantBeSeeker.weapType) then
+	local canBeSeeker = { 1, 0, 0, 1, 1, 1, 0, 0, 1, 0, 0, 1 }
+	local weapTypeIndex = This:GetWeaponRealType(Item)
+	weapTypeIndex = weapTypeIndex + 1
+	if(canBeSeeker[weapTypeIndex] == 1) then
 		Item.seeker = val
 		return true
 	end
