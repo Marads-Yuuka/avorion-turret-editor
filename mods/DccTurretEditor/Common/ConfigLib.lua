@@ -19,6 +19,7 @@ local This = {
 	TechPostLevel = 1,
 	CostColour = 0,
 	CostTargeting = 0,
+	CostSeeker = 0,
 	CostCoaxial = 0,
 	CostSize = 0,
 	CostCoolingMoney = 0,
@@ -31,7 +32,6 @@ local This = {
 	MountingRarityRequirement = 0,
 	MountingCountRequirement = 5,
 	FlakCountRequirement = 3,
-	ProjectileSpeedMax = 0,
 	Debug = false,
 	Experimental = false,
 
