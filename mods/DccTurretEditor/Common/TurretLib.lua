@@ -1292,7 +1292,7 @@ end
 function This:ToggleWeaponSeeker(Item)
 -- set automatic targeting.
 
-	if(This:SetWeaponSeeker(Item,(not Item.automatic))) then
+	if(This:SetWeaponSeeker(Item,(not Item.seeker))) then
 		return true
 	end
 	
